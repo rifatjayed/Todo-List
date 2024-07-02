@@ -1,35 +1,39 @@
-// import {
-//     Dialog,
-//     DialogContent,
-//     DialogDescription,
-//     DialogHeader,
-//     DialogTitle,
-//     DialogTrigger,
-//   } from "@/components/ui/dialog"
-
 import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-//   DialogFooter,
-// } from "@/@/components/ui/dialog";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
+import { FormEvent, useState } from "react";
+import { useAppDispatch } from "@/redux/hooks";
+import { addTodo } from "@/redux/features/todoSlice";
 const AddTodoModal = () => {
+  const [task, setTask] = useState("");
+  const [description, setDescription] = useState("");
+
+  const dispatch = useAppDispatch();
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    const randomString = Math.random().toString(36).substring(2, 7);
+
+    const taskDetails = {
+      id: randomString,
+      title: task,
+      description: description,
+    };
+
+    dispatch(addTodo(taskDetails));
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -37,6 +41,7 @@ const AddTodoModal = () => {
           Add Todo
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add task</DialogTitle>
@@ -44,31 +49,33 @@ const AddTodoModal = () => {
             Add your task that you want to finished
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <form onSubmit={onSubmit}>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+            <Label htmlFor="task" className="text-right">
               Task
             </Label>
             <Input
-              id="name"
-              defaultValue="Pedro Duarte"
+              onBlur={(e) => setTask(e.target.value)}
+              id="task"
               className="col-span-3"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label htmlFor="description" className="text-right">
               Description
             </Label>
             <Input
-              id="username"
-              defaultValue="@peduarte"
+              onBlur={(e) => setDescription(e.target.value)}
+              id="description"
               className="col-span-3"
             />
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
+          <div>
+            <DialogClose asChild>
+              <Button type="submit">Save changes</Button>
+            </DialogClose>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
